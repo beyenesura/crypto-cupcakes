@@ -15,11 +15,21 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 /* *********** YOUR CODE HERE *********** */
-// follow the module instructions: destructure config environment variables from process.env
-// follow the docs:
-  // define the config object
-  // attach Auth0 OIDC auth router
-  // create a GET / route handler that sends back Logged in or Logged out
+const {
+  AUTH0_SECRET = 'a long, randomly-generated string stored in env',
+  AUTH0_AUDIENCE = 'http://localhost:3000',
+  AUTH0_CLIENT_ID,
+  AUTH0_BASE_URL,
+} = process.env;
+
+const config = {
+  authRequired: true,
+  auth0Logout: true,
+  secret: AUTH0_SECRET,
+  baseURL: AUTH0_AUDIENCE,
+  clientID: AUTH0_CLIENT_ID,
+  issuerBaseURL: AUTH0_BASE_URL,
+};
 
 app.get('/cupcakes', async (req, res, next) => {
   try {
@@ -29,6 +39,18 @@ app.get('/cupcakes', async (req, res, next) => {
     console.error(error);
     next(error);
   }
+});
+
+  // create a GET / route handler that sends back Logged in or Logged out
+ if (isLoggedIn) {
+    res.send('Logged in');
+  } else {
+    res.send('Logged out');
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
 });
 
 // error handling middleware
